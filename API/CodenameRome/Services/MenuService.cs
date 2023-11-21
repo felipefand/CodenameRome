@@ -27,6 +27,9 @@ namespace CodenameRome.Services
         public async Task<MenuItem?> GetAsync(string id) =>
             await _menuCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
+        public async Task<MenuItem?> GetByTypeAsync(string type) =>
+    await _menuCollection.Find(x => x.Type == type).FirstOrDefaultAsync();
+
         public async Task CreateAsync(MenuItem newItem) =>
             await _menuCollection.InsertOneAsync(newItem);
 
