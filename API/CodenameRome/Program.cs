@@ -1,4 +1,14 @@
+using CodenameRome.Models;
+using CodenameRome.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Recover Database Configuration Settings
+builder.Services.Configure<DBSettings>(
+    builder.Configuration.GetSection("CodenameRomeDB"));
+
+// Add DB Services
+builder.Services.AddSingleton<MenuService>();
 
 // Add services to the container.
 
