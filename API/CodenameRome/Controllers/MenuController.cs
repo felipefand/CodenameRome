@@ -41,6 +41,14 @@ namespace CodenameRome.Controllers
             return Created(String.Empty, newItem);
         }
 
+        [HttpPost("{type}")]
+        [ProducesResponseType(typeof(List<MenuItem>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetByType(string type)
+        {
+            var list = await _menuService.GetByTypeAsync(type);
+            return Ok(list);
+        }
+
         [HttpDelete]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
