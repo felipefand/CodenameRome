@@ -21,6 +21,14 @@ namespace CodenameRome.Controllers
             return Ok(list);
         }
 
+        [HttpGet]
+        [Route("getCategories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var categories = await _menuService.GetCategoriesAsync();
+            return Ok(categories);
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(MenuItem), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -39,14 +47,6 @@ namespace CodenameRome.Controllers
         {
             await _menuService.CreateAsync(newItem);
             return Created(String.Empty, newItem);
-        }
-
-        [HttpPost("{type}")]
-        [ProducesResponseType(typeof(List<MenuItem>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetByType(string type)
-        {
-            var list = await _menuService.GetByTypeAsync(type);
-            return Ok(list);
         }
 
         [HttpDelete]
