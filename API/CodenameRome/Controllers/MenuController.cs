@@ -55,7 +55,7 @@ namespace CodenameRome.Controllers
 
         public async Task<IActionResult> Delete(string id)
         {
-            var item = _menuService.GetAsync(id);
+            var item = await _menuService.GetAsync(id);
             if (item == null) return NoContent();
 
             await _menuService.RemoveAsync(id);

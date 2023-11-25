@@ -1,0 +1,50 @@
+$backgroundColor: #f5f5f5;
+$textColor: #333;
+$borderSize: 2px;
+$borderColor: #ddd;
+
+.card {
+  width: 300px;
+  background-color: $backgroundColor;
+  border: $borderSize solid $borderColor;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+  background-color: #dcdcdc;
+  cursor: pointer;
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.product-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: $textColor
+;
+  margin-bottom: 8px;
+}
+
+.product-description {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.plus-card {
+  text-align: center;
+}
