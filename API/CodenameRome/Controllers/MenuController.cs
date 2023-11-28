@@ -31,11 +31,11 @@ namespace CodenameRome.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(MenuItem), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(string id)
         {
             var item = await _menuService.GetAsync(id);
-            if (item == null) return NoContent();
+            if (item == null) return NotFound();
             return Ok(item);
         }
 
@@ -49,28 +49,28 @@ namespace CodenameRome.Controllers
             return Created(String.Empty, newItem);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
 
         public async Task<IActionResult> Delete(string id)
         {
             var item = await _menuService.GetAsync(id);
-            if (item == null) return NoContent();
+            if (item == null) return NotFound();
 
             await _menuService.RemoveAsync(id);
             return Ok(item);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(MenuItem), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
 
         public async Task<IActionResult> Update(string id, MenuItem updatedItem)
         {
             var item = await _menuService.GetAsync(id);
-            if (item == null) return NoContent();
+            if (item == null) return NotFound();
 
             updatedItem.Id = item.Id;
             await _menuService.UpdateAsync(id, updatedItem);

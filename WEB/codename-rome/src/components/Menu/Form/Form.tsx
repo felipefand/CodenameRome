@@ -1,23 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuItem } from "../../../common/types/MenuItem";
 
 interface FormProps {
-    isOpen: boolean;
     onClose: () => void
     addToMenu: (menuItem: MenuItem) => void
+    editItemForm: MenuItem
+    updateMenu: (item: MenuItem) => void
 }
 
-const Form: React.FC<FormProps> = ({isOpen, onClose, addToMenu} : FormProps) => {
-    const [formState, setForm] = useState({
-        name: '',
-        description: '',
-        price: 0,
-        category: '',
-        ingredients: "PLACEHOLDER"
-    })
+const Form: React.FC<FormProps> = ({onClose, addToMenu, editItemForm, updateMenu} : FormProps) => {
+    const [formState, setForm] = useState(editItemForm)
+    const isEditing = editItemForm.id? true : false
 
-    function postForm(event: React.FormEvent) {
-        event.preventDefault()
+    function postForm() {
         addToMenu(formState)
         setForm({
             name: '',
@@ -28,10 +23,19 @@ const Form: React.FC<FormProps> = ({isOpen, onClose, addToMenu} : FormProps) => 
         })
     }
 
-    if (isOpen)
+    function putForm(){
+        updateMenu(formState)
+        onClose()
+    }
+
+    function submitForm(){
+        if (isEditing) putForm()
+        else postForm()
+    }
+
     return (
         <div>
-            <form onSubmit={postForm}>
+            <form>
                 Product Name: <input value={formState.name} type="text" onChange={event => setForm({...formState, name: event.target.value})} />
                 <br/>
                 Product Description: <input value={formState.description} type="text" onChange={event => setForm({...formState, description: event.target.value})}/>
@@ -40,12 +44,10 @@ const Form: React.FC<FormProps> = ({isOpen, onClose, addToMenu} : FormProps) => 
                 <br/>
                 Product Category: <input value={formState.category} type="text" onChange={event => setForm({...formState, category: event.target.value})}/>
                 <br/>
-                <button type="submit">Add Product</button>
+                <button onClick={submitForm} type="button">{isEditing? "Update Product" : "Add Product"}</button>
             </form>
         </div>
     )
-    
-    else return null
 }
 
 export default Form;
