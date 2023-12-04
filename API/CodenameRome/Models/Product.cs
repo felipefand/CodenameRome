@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace CodenameRome.Models
 {
-    public class MenuItem
+    public class Product
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -21,7 +21,7 @@ namespace CodenameRome.Models
         [BsonElement("description")]
         public string Description { get; set; }
 
-        [BsonElement("ingredients")]
-        public string? Ingredients { get; set; }
+        [BsonElement("clientId")]
+        public string ClientId { get; set; }
     }
 }
