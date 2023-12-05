@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
-using CodenameRome.Utils;
 using CodenameRome.Database;
 
 namespace CodenameRome.Services
@@ -10,10 +9,8 @@ namespace CodenameRome.Services
     public class LoginService
     {
         private readonly IMongoCollection<User> _userCollection;
-        private readonly DatabaseFilters _dbFilters;
 
-        public LoginService(
-            IOptions<DBSettings> DBSettings)
+        public LoginService(IOptions<DBSettings> DBSettings)
         {
             var mongoClient = new MongoClient(
                 DBSettings.Value.ConnectionString);
@@ -23,8 +20,6 @@ namespace CodenameRome.Services
 
             _userCollection = mongoDatabase.GetCollection<User>(
                 DBSettings.Value.UserCollectionName);
-
-            _dbFilters = new DatabaseFilters();
         }
         public async Task CreateAsync(User newUser) =>
             await _userCollection.InsertOneAsync(newUser);

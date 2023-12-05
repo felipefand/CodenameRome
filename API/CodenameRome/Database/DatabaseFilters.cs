@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace CodenameRome.Utils
+namespace CodenameRome.Database
 {
     public class DatabaseFilters
     {

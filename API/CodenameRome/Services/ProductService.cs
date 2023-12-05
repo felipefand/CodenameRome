@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
-using CodenameRome.Utils;
 using CodenameRome.Database;
 
 namespace CodenameRome.Services
@@ -12,8 +11,7 @@ namespace CodenameRome.Services
         private readonly IMongoCollection<Product> _productCollection;
         private readonly DatabaseFilters _dbFilters;
 
-        public ProductService(
-            IOptions<DBSettings> DBSettings)
+        public ProductService(IOptions<DBSettings> DBSettings, DatabaseFilters databaseFilters)
         {
             var mongoClient = new MongoClient(
                 DBSettings.Value.ConnectionString);
@@ -24,7 +22,7 @@ namespace CodenameRome.Services
             _productCollection = mongoDatabase.GetCollection<Product>(
                 DBSettings.Value.ProductCollectionName);
 
-            _dbFilters = new DatabaseFilters();
+            _dbFilters = databaseFilters;
         }
 
         public async Task<List<Product>> GetAsync(string clientId) =>
@@ -33,7 +31,7 @@ namespace CodenameRome.Services
         public async Task<Product?> GetByIdAsync(string id) =>
             await _productCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        //public async Task<List<string>> GetCategoriesAsync()
+        //public async Task<List<string>> GetCategoriesAsync(string clientId)
         //{
         //    var pipeline = _dbFilters.getCategoriesFilter();
         //    var categories = await _productCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();

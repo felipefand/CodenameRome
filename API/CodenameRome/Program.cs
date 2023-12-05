@@ -19,7 +19,12 @@ builder.Services.Configure<TokenSettings>(
 // Add DB Services
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<LoginService>();
+builder.Services.AddSingleton<EmployeeService>();
+
+//Dependency Injection
 builder.Services.AddSingleton<TokenGenerator>();
+builder.Services.AddSingleton<Hasher>();
+builder.Services.AddSingleton<DatabaseFilters>();
 
 // Add services to the container.
 

@@ -4,22 +4,21 @@ using CodenameRome.Dtos;
 using CodenameRome.Services;
 using CodenameRome.Models;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace CodenameRome.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : Controller
+    public class LoginController : ControllerBase
     {
         private readonly Hasher _hasher;
         private readonly TokenGenerator _tokenGenerator;
         private readonly LoginService _loginService;
-        public LoginController(LoginService loginService, TokenGenerator tokenGenerator)
+        public LoginController(LoginService loginService, TokenGenerator tokenGenerator, Hasher hasher)
         {
             _loginService = loginService;
             _tokenGenerator = tokenGenerator;
-            _hasher = new Hasher();
+            _hasher = hasher;
         }
 
         [HttpPost("register")]
@@ -29,7 +28,6 @@ namespace CodenameRome.Controllers
             var newUser = new User();
             newUser.Username = user.Username;
             newUser.PasswordHash = _hasher.passwordTextToHash(user.Password);
-            newUser.Role = user.Role;
             newUser.ClientId = clientId;
             await _loginService.CreateAsync(newUser);
 
@@ -37,6 +35,9 @@ namespace CodenameRome.Controllers
         }
 
         [HttpPost]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(LoginDto loginRequest)
         {
             var user = await _loginService.GetAsync(loginRequest.Username);

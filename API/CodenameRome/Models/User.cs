@@ -15,6 +15,6 @@ namespace CodenameRome.Models
         [BsonElement("passwordHash")]
         public string PasswordHash { get; set; }
         [BsonElement("role")]
-        public string Role { get; set; }
+        public string Role { get; set; } = "admin";
     }
 }

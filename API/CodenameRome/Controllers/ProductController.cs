@@ -18,12 +18,15 @@ namespace CodenameRome.Controllers
 
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(string? clientId)
         {
-            var clientId = User.FindFirst(ClaimTypes.Name).Value;
+            if (clientId == null && User.FindFirst(ClaimTypes.Name) != null)
+                clientId = User.FindFirst(ClaimTypes.Name).Value;
+
             var productList = await _productService.GetAsync(clientId);
             return Ok(productList);
         }
@@ -36,7 +39,7 @@ namespace CodenameRome.Controllers
         //    return Ok(categories);
         //}
 
-        [HttpGet("{id}")]
+        [HttpGet("single/{id}")]
         [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -70,7 +73,7 @@ namespace CodenameRome.Controllers
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
