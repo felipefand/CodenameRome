@@ -20,6 +20,7 @@ builder.Services.Configure<TokenSettings>(
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<LoginService>();
 builder.Services.AddSingleton<EmployeeService>();
+builder.Services.AddSingleton<CustomerService>();
 
 //Dependency Injection
 builder.Services.AddSingleton<TokenGenerator>();
