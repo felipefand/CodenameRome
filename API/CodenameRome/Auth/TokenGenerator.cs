@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using CodenameRome.Interfaces;
 
 namespace CodenameRome.Auth
 {
@@ -13,7 +14,7 @@ namespace CodenameRome.Auth
         public TokenGenerator(IOptions<TokenSettings> tokenSettings) =>
             _tokenSettings = tokenSettings.Value;
 
-        public string GenerateToken(User user)
+        public string GenerateToken(IAuthenticatable user)
         {
             List<Claim> claims = new List<Claim>
             {

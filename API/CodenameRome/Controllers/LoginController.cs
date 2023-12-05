@@ -4,6 +4,7 @@ using CodenameRome.Dtos;
 using CodenameRome.Services;
 using CodenameRome.Models;
 using Microsoft.AspNetCore.Authorization;
+using CodenameRome.Interfaces;
 
 namespace CodenameRome.Controllers
 {
@@ -40,7 +41,10 @@ namespace CodenameRome.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(LoginDto loginRequest)
         {
-            var user = await _loginService.GetAsync(loginRequest.Username);
+            IAuthenticatable user = await _loginService.GetUserAsync(loginRequest.Username);
+
+            if (user == null)
+                user = await _loginService.GetEmployeeAsync(loginRequest.Username);
 
             if (user == null) return BadRequest("User not found.");
 

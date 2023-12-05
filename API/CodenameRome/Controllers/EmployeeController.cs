@@ -45,7 +45,7 @@ namespace CodenameRome.Controllers
             newEmployee.Name = employee.Name;
             newEmployee.Address = employee.Address;
             newEmployee.PhoneNumber = employee.PhoneNumber;
-            newEmployee.Login = employee.Login;
+            newEmployee.Username = employee.Username;
             newEmployee.PasswordHash = _hasher.passwordTextToHash(employee.Password);
             newEmployee.Salary = employee.Salary;
             newEmployee.Role = employee.Role;
@@ -72,7 +72,7 @@ namespace CodenameRome.Controllers
             updatedEmployee.Name = employee.Name;
             updatedEmployee.Address = employee.Address;
             updatedEmployee.PhoneNumber = employee.PhoneNumber;
-            updatedEmployee.Login = employee.Login;
+            updatedEmployee.Username = employee.Username;
             updatedEmployee.PasswordHash = _hasher.passwordTextToHash(newPassword);
             updatedEmployee.Salary = employee.Salary;
             updatedEmployee.Role = employee.Role;

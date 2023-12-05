@@ -1,9 +1,10 @@
-﻿using MongoDB.Bson;
+﻿using CodenameRome.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace CodenameRome.Models
 {
-    public class User
+    public class User : IUser
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

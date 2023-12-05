@@ -1,9 +1,10 @@
-﻿using MongoDB.Bson;
+﻿using CodenameRome.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace CodenameRome.Models
 {
-    public class Employee
+    public class Employee : IEmployee
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -16,8 +17,8 @@ namespace CodenameRome.Models
         public string Address { get; set; }
         [BsonElement("phoneNumber")]
         public string PhoneNumber { get; set; }
-        [BsonElement("login")]
-        public string Login { get; set; }
+        [BsonElement("username")]
+        public string Username { get; set; }
         [BsonElement("passwordHash")]
         public string PasswordHash { get; set; }
         [BsonElement("salary")]
