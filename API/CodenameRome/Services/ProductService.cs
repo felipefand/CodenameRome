@@ -3,15 +3,16 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using CodenameRome.Database;
+using CodenameRome.Dtos;
+using CodenameRome.Services.Interfaces;
 
 namespace CodenameRome.Services
 {
-    public class ProductService
+    public class ProductService : IProductService
     {
         private readonly IMongoCollection<Product> _productCollection;
-        private readonly DatabaseFilters _dbFilters;
 
-        public ProductService(IOptions<DBSettings> DBSettings, DatabaseFilters databaseFilters)
+        public ProductService(IOptions<DBSettings> DBSettings)
         {
             var mongoClient = new MongoClient(
                 DBSettings.Value.ConnectionString);
@@ -21,33 +22,34 @@ namespace CodenameRome.Services
 
             _productCollection = mongoDatabase.GetCollection<Product>(
                 DBSettings.Value.ProductCollectionName);
-
-            _dbFilters = databaseFilters;
         }
 
-        public async Task<List<Product>> GetAsync(string clientId) =>
+        public async Task<List<Product>> GetByClientId(string clientId) =>
             await _productCollection.Find(x => x.ClientId == clientId).ToListAsync();
 
-        public async Task<Product?> GetByIdAsync(string id) =>
+        public async Task<Product?> GetById(string id) =>
             await _productCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        //public async Task<List<string>> GetCategoriesAsync(string clientId)
-        //{
-        //    var pipeline = _dbFilters.getCategoriesFilter();
-        //    var categories = await _productCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
-        //    return categories.Select(x => x.GetValue("_id").AsString).ToList();
-        //}
-
-        //public async Task<List<Product>> GetByCategoryAsync(string type) =>
-        //    await _productCollection.Find(x => x.Category == type).ToListAsync();
-
-        public async Task CreateAsync(Product newProduct) =>
+        public async Task Create(Product newProduct) =>
             await _productCollection.InsertOneAsync(newProduct);
 
-        public async Task UpdateAsync(string id, Product updatedProduct) =>
-            await _productCollection.ReplaceOneAsync(x => x.Id == id, updatedProduct);
+        public async Task Update(string id, ProductDto product)
+        {
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq("Id", id);
+            UpdateDefinition<Product> update = Builders<Product>.Update.Set(c => c.Id, id);
 
-        public async Task RemoveAsync(string id) =>
+            var clientProperties = typeof(ProductDto).GetProperties();
+            foreach (var property in clientProperties)
+            {
+                var value = property.GetValue(product);
+                if (value != null)
+                    update = update.Set(property.Name, value);
+            }
+
+            await _productCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task Remove(string id) =>
             await _productCollection.DeleteOneAsync(x => x.Id == id);
     }
 }

@@ -2,11 +2,10 @@
 {
     public class DBSettings
     {
-        public string ConnectionString { get; set; } = null;
-        public string DBName { get; set; } = null;
-        public string ProductCollectionName { get; set; } = null;
-        public string UserCollectionName { get; set; } = null;
-        public string EmployeeCollectionName { get; set; } = null;
-        public string CustomerCollectionName { get; set; } = null;
+        public string? ConnectionString { get; set; }
+        public string? DBName { get; set; }
+        public string? ClientCollectionName { get; set; }
+        public string? EmployeeCollectionName { get; set; }
+        public string? ProductCollectionName { get; set; }
     }
 }

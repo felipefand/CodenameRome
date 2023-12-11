@@ -7,21 +7,20 @@ namespace CodenameRome.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public string? Id { get; set; } = String.Empty;
+        [BsonElement("clientId")]
+        public string ClientId { get; set; } = String.Empty;
 
         [BsonElement("category")]
-        public string Category { get; set; }
+        public string Category { get; set; } = String.Empty;
 
         [BsonElement("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = String.Empty;
 
         [BsonElement("price")]
-        public int Price { get; set; }
+        public int Price { get; set; } = 0;
 
         [BsonElement("description")]
-        public string Description { get; set; }
-
-        [BsonElement("clientId")]
-        public string ClientId { get; set; }
+        public string Description { get; set; } = String.Empty;
     }
 }

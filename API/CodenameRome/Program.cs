@@ -1,6 +1,10 @@
+using CodenameRome.Application;
+using CodenameRome.Application.Auth;
+using CodenameRome.Application.Interfaces;
 using CodenameRome.Auth;
 using CodenameRome.Database;
 using CodenameRome.Services;
+using CodenameRome.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -16,15 +20,19 @@ builder.Services.Configure<DBSettings>(
 builder.Services.Configure<TokenSettings>(
     builder.Configuration.GetSection("TokenSettings"));
 
+// Add Application Services
+builder.Services.AddSingleton<ILoginApplication, LoginApplication>();
+builder.Services.AddSingleton<IClientApplication, ClientApplication>();
+builder.Services.AddSingleton<IEmployeeApplication, EmployeeApplication>();
+builder.Services.AddSingleton<IProductApplication, ProductApplication>();
+
 // Add DB Services
-builder.Services.AddSingleton<ProductService>();
-builder.Services.AddSingleton<LoginService>();
-builder.Services.AddSingleton<EmployeeService>();
-builder.Services.AddSingleton<CustomerService>();
+builder.Services.AddSingleton<IClientService, ClientService>();
+builder.Services.AddSingleton<IEmployeeService, EmployeeService>();
+builder.Services.AddSingleton<IProductService, ProductService>();
 
 //Dependency Injection
-builder.Services.AddSingleton<TokenGenerator>();
-builder.Services.AddSingleton<Hasher>();
+builder.Services.AddSingleton<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<DatabaseFilters>();
 
 // Add services to the container.
@@ -56,7 +64,7 @@ builder.Services.AddSwaggerGen(option =>
                     Id = "Bearer"
                 }
             },
-            new string[]{ }
+            Array.Empty<string>()
         }
     });
 });
@@ -80,7 +88,7 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidAudience = tokenSettings.Audience,
         ValidIssuer = tokenSettings.Issuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSettings.Secret))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSettings.Secret!))
     };
 });
 
