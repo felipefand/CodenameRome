@@ -1,29 +1,30 @@
-﻿namespace CodenameRome.Contracts.Employees
+﻿using CodenameRome.Models;
+
+namespace CodenameRome.Contracts.Employees
 {
     public class EmployeeDto
     {
-        private readonly string[] ACCEPTABLEACCESSLEVEL = {"10", "20", "30"};
         public string? Name { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
         public decimal? Salary { get; set; }
-        public string? Username { get; set; }
+        public string? Email { get; set; }
         public string? Password { get; set; }
-        public string AccessLevel { get; set; } = "30";
+        public EmployeeRole? Role { get; set; }
 
         public void ValidateEmployeeCreation()
         {
             if (this.Name == null)
                 throw new Exception("Name must be inserted.");
 
-            if (this.AccessLevel == null)
-                throw new Exception("Access level can't be null.");
+            if (this.Role == null)
+                throw new Exception("Role must be inserted.");
 
-            if (this.Username != null && this.Password == null)
+            if (this.Email != null && this.Password == null)
                 throw new Exception("Password can't be null.");
 
-            if (this.Password != null && this.Username == null)
-                throw new Exception("Username can't be null.");
+            if (this.Password != null && this.Email == null)
+                throw new Exception("Email can't be null.");
 
             this.ValidateEmployee();
         }
@@ -32,9 +33,6 @@
         {
             if (this.Name != null)
                 this.ValidateName();
-
-            if (this.AccessLevel != null)
-                this.ValidateAccessLevel();
 
             if (this.Address != null)
                 this.ValidateAddress();
@@ -45,11 +43,14 @@
             if (this.Salary != null)
                 this.ValidateSalary();
 
-            if (this.Username != null)
-                this.ValidateUsername();
+            if (this.Email != null)
+                this.ValidateEmail();
 
             if (this.Password != null)
                 this.ValidatePassword();
+
+            if (this.Role != null)
+                this.ValidateRole();
         }
 
         public void ValidateName()
@@ -76,16 +77,16 @@
                 throw new Exception("Salary is too big");
         }
 
-        public void ValidateUsername()
+        public void ValidateEmail()
         {
-            if (this.Username!.Length >= 20)
-                throw new Exception("Username is too long.");
+            if (this.Email!.Length >= 20)
+                throw new Exception("Email is too long.");
         }
 
-        public void ValidateAccessLevel()
+        public void ValidateRole()
         {
-            if (!ACCEPTABLEACCESSLEVEL.Contains(this.AccessLevel))
-                throw new Exception("Invalid access level.");
+            if (Enum.IsDefined(typeof(EmployeeRole), this.Role!))
+                throw new Exception("Invalid role.");
         }
 
         public void ValidatePassword()

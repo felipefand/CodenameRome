@@ -19,7 +19,7 @@ namespace CodenameRome.Auth
             List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Name, employee.ClientId), // MAKE SURE THIS IS OK
-                new Claim(ClaimTypes.Role, employee.AccessLevel!),
+                new Claim(ClaimTypes.Role, employee.Role.ToString()!),
                 new Claim(ClaimTypes.NameIdentifier, employee.Id!)
             };
 

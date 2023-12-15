@@ -1,10 +1,18 @@
-﻿using MongoDB.Bson;
+﻿using CodenameRome.Application.Auth;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 using BC = BCrypt.Net.BCrypt;
 
 namespace CodenameRome.Models
 {
+    public enum EmployeeRole
+    {
+        Admin = 0,
+        Owner = 10,
+        Manager = 20,
+        Employee = 30
+    }
     public class Employee
     {
         [BsonId]
@@ -21,12 +29,12 @@ namespace CodenameRome.Models
         [BsonElement("salary")]
         public decimal? Salary { get; set; } = 0;
         [BsonElement("username")]
-        public string? Username { get; set; }
+        public string? Email { get; set; }
         [BsonIgnore]
         public string? Password
         {
             get => passwordHash;
-            set 
+            set
             {
                 if (value != null)
                 {
@@ -35,14 +43,15 @@ namespace CodenameRome.Models
 
                     passwordHash = BC.HashPassword(value);
                 }
-            } 
+            }
         }
 
         [BsonElement("passwordHash")]
         private string? passwordHash;
 
-        [BsonElement("accessLevel")]
-        public string? AccessLevel { get; set; }
+        [BsonElement("role")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public EmployeeRole Role { get; set; }
 
         public bool VerifyPassword(string password)
         {

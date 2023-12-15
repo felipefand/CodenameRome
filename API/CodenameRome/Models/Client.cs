@@ -20,5 +20,7 @@ namespace CodenameRome.Models
         public string OwnerEmail { get; set; } = String.Empty;
         [BsonElement("ownerId")]
         public string OwnerId { get; set; } = String.Empty;
+        [BsonElement("isLive")]
+        public bool IsLive { get; set; } = true;
     }
 }

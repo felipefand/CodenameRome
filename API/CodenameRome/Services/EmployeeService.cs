@@ -4,6 +4,7 @@ using CodenameRome.Models;
 using CodenameRome.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using BC = BCrypt.Net.BCrypt;
 
 namespace CodenameRome.Services
 {
@@ -27,27 +28,14 @@ namespace CodenameRome.Services
         public async Task<Employee?> GetById(string id) =>
             await _employeeCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        public async Task<Employee?> GetByUsername(string username) =>
-            await _employeeCollection.Find(x => x.Username == username).FirstOrDefaultAsync();
+        public async Task<Employee?> GetByEmail(string email) =>
+            await _employeeCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
 
         public async Task Create(Employee employee) =>
             await _employeeCollection.InsertOneAsync(employee);
 
         public async Task Update(string id, EmployeeDto employee)
         {
-            //FilterDefinition<Employee> filter = Builders<Employee>.Filter.Eq("Id", id);
-            //UpdateDefinition<Employee> update = Builders<Employee>.Update.Set(e => e.Id, id);
-
-            //var employeeProperties = typeof(EmployeeDto).GetProperties();
-            //foreach (var property in employeeProperties)
-            //{
-            //    var value = property.GetValue(employee);
-            //    if (value != null)
-            //        update = update.Set(property.Name, value);
-            //}
-
-            //await _employeeCollection.UpdateOneAsync(filter, update);
-
             var updatedEmployee = await _employeeCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
 
             var employeeProperties = typeof(EmployeeDto).GetProperties();
@@ -65,11 +53,6 @@ namespace CodenameRome.Services
         }
         public async Task ChangePassword(string id, string newPassword)
         {
-            //FilterDefinition<Employee> filter = Builders<Employee>.Filter.Eq("Id", id);
-            //UpdateDefinition<Employee> update = Builders<Employee>.Update.Set(e => e.PasswordHash, newPassword);
-
-            //await _employeeCollection.UpdateOneAsync(filter, update);
-
             var employee = await _employeeCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
             employee.Password = newPassword;
             await _employeeCollection.ReplaceOneAsync(e => e.Id == id, employee);

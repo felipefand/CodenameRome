@@ -5,9 +5,6 @@ namespace CodenameRome.Application.Interfaces
 {
     public interface IEmployeeApplication
     {
-        void ObfuscatePasswords(List<Employee> employeeList);
-        Task ChangePass(string id, string newPassword);
-        Task<Employee> Update(string id, EmployeeDto employeeDto);
         Task<List<Employee>> GetEmployeesByClientId(string id);
         Task<Employee?> GetEmployeeById(string id, string clientId);
         Task<Employee> CreateEmployee(EmployeeDto employee, string clientId, string employeeRole);

@@ -48,12 +48,13 @@ namespace CodenameRome.Application
 
         public async Task<Product> UpdateProduct(ProductDto product, string clientId, string id)
         {
+            product.ValidateProduct();
+
             var oldProduct = await _productService.GetById(id);
 
             if (oldProduct == null || oldProduct.ClientId != clientId)
                 throw new ArgumentNullException(NOTFOUND);
 
-            product.ValidateProduct();
             await _productService.Update(id, product);
             var updatedProduct = await _productService.GetById(id);
 

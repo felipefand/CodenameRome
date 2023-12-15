@@ -8,5 +8,11 @@
         public string? OwnerName { get; set; }
         public string? OwnerEmail { get; set; }
         public string? OwnerId { get; set; }
+        public string? IsLive { get; set; }
+
+        public void Validate()
+        {
+            //TO ADD
+        }
     }
 }

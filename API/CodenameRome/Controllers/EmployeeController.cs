@@ -18,7 +18,7 @@ namespace CodenameRome.Controllers
             _employeeApplication = employeeApplication;
         }
 
-        [Authorize(Roles = "0, 10, 20")]
+        [Authorize(Roles = "Admin, Owner, Manager")]
         [HttpGet]
         [ProducesResponseType(typeof(List<Employee>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -31,7 +31,7 @@ namespace CodenameRome.Controllers
             return Ok(employeeList);
         }
 
-        [Authorize(Roles = "0, 10, 20")]
+        [Authorize(Roles = "Admin, Owner, Manager")]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Employee), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -52,7 +52,7 @@ namespace CodenameRome.Controllers
             }
         }
 
-        [Authorize(Roles = "0, 10, 20")]
+        [Authorize(Roles = "Admin, Owner, Manager")]
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(Employee), StatusCodes.Status201Created)]
@@ -76,7 +76,7 @@ namespace CodenameRome.Controllers
 
         }
 
-        [Authorize(Roles = "0, 10, 20")]
+        [Authorize(Roles = "Admin, Owner, Manager")]
         [HttpPut("/changepassword/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -110,7 +110,7 @@ namespace CodenameRome.Controllers
             }
         }
 
-        [Authorize(Roles = "0, 10, 20, 30")]
+        [Authorize(Roles = "Admin, Owner, Manager, Employee")]
         [HttpPut("/changemypassword/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -141,7 +141,7 @@ namespace CodenameRome.Controllers
             }
         }
 
-        [Authorize(Roles = "0, 10, 20")]
+        [Authorize(Roles = "Admin, Owner, Manager")]
         [HttpPut("{id}")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(Employee), StatusCodes.Status200OK)]
@@ -175,7 +175,7 @@ namespace CodenameRome.Controllers
             }
         }
 
-        [Authorize(Roles = "0, 10, 20")]
+        [Authorize(Roles = "Admin, Owner, Manager")]
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Employee), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

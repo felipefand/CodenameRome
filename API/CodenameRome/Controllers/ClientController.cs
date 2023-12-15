@@ -35,7 +35,7 @@ namespace CodenameRome.Controllers
         {
             try
             {
-                var client = await _clientApplication.GetClientById(id);
+                var client = await _clientApplication.GetClientsById(id);
                 return Ok(client);
             }
             catch (Exception ex)
@@ -84,8 +84,26 @@ namespace CodenameRome.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPut("status/{id}")]
         [ProducesResponseType(typeof(Client), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeStatus(string id, bool status)
+        {
+            try
+            {
+                var client = await _clientApplication.ChangeClientStatus(id, status);
+                return Ok(client);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(typeof(DeleteClientResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

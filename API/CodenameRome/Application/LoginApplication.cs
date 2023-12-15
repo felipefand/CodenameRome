@@ -19,7 +19,7 @@ namespace CodenameRome.Application
 
         public async Task<LoginResponse> AttemptLogin(LoginRequest loginRequest)
         {
-            var employee = await _employeeService.GetByUsername(loginRequest.Username);
+            var employee = await _employeeService.GetByEmail(loginRequest.Email);
 
             if (employee == null)
                 throw new Exception(ERRORMESSAGE);

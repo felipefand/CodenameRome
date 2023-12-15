@@ -9,13 +9,15 @@ namespace CodenameRome.Application
     {
         private readonly IClientService _clientService;
         private readonly IEmployeeService _employeeService;
+        private readonly IProductService _productService;
         private readonly string NOTFOUND = "Client not found.";
-        private readonly string DEFAULTACCESSLEVEL = "10";
+        private readonly string EMAILINUSE = "Email is already registered.";
 
-        public ClientApplication(IClientService clientService, IEmployeeService employeeService)
+        public ClientApplication(IClientService clientService, IEmployeeService employeeService, IProductService productService)
         {
             _clientService = clientService;
             _employeeService = employeeService;
+            _productService = productService;
         }
 
         public async Task<List<Client>> GetAllClients()
@@ -24,7 +26,7 @@ namespace CodenameRome.Application
             return clientList;
         }
 
-        public async Task<Client?> GetClientById(string id)
+        public async Task<Client?> GetClientsById(string id)
         {
             var client = await _clientService.GetById(id);
 
@@ -34,15 +36,33 @@ namespace CodenameRome.Application
             return client;
         }
 
+        public async Task<Client> ChangeClientStatus(string id, bool status)
+        {
+            var client = await _clientService.GetById(id);
+            if (client == null)
+                throw new Exception(NOTFOUND);
+
+            client.IsLive = status;
+            await _clientService.Replace(id, client);
+
+            return client;
+        }
+
         public async Task<ClientResponse> CreateClient(CreateClientDto createClient)
         {
+            var employeeWithEmail = await _employeeService.GetByEmail(createClient.OwnerEmail);
+            if (employeeWithEmail != null)
+                throw new Exception(EMAILINUSE);
+
+            createClient.Validate();
+
             var client = new Client
             {
                 Name = createClient.BusinessName,
                 Address = createClient.BusinessAddress,
                 PhoneNumber = createClient.BusinessPhoneNumber,
                 OwnerName = createClient.OwnerName,
-                OwnerEmail = createClient.OwnerEmail,
+                OwnerEmail = createClient.BusinessEmail,
                 OwnerId = ""
             };
 
@@ -53,9 +73,9 @@ namespace CodenameRome.Application
                 Name = createClient.OwnerName,
                 Address = createClient.OwnerAddress,
                 PhoneNumber = createClient.OwnerPhoneNumber,
-                Username = createClient.OwnerUsername,
+                Email = createClient.OwnerEmail,
                 Password = createClient.OwnerPassword,
-                AccessLevel = DEFAULTACCESSLEVEL,
+                Role = EmployeeRole.Owner,
                 ClientId = client.Id!
             };
 
@@ -76,9 +96,10 @@ namespace CodenameRome.Application
         public async Task<Client> UpdateClient(string id, ClientDto client)
         {
             var oldClient = await _clientService.GetById(id);
-
             if (oldClient == null)
                 throw new Exception(NOTFOUND);
+
+            client.Validate();
 
             await _clientService.Update(id, client);
             var updatedClient = await _clientService.GetById(id);
@@ -86,7 +107,7 @@ namespace CodenameRome.Application
             return updatedClient!;
         }
 
-        public async Task<Client> DeleteClient(string id)
+        public async Task<DeleteClientResponse> DeleteClient(string id)
         {
             var client = await _clientService.GetById(id);
 
@@ -95,7 +116,36 @@ namespace CodenameRome.Application
 
             await _clientService.Remove(id);
 
-            return client;
+            var response = new DeleteClientResponse();
+            response.Client = client;
+            response.Employees = await DeleteClientEmployees(id);
+            response.Products = await DeleteClientProducts(id);
+
+            return response;
+        }
+
+        public async Task<List<Employee>> DeleteClientEmployees(string clientId)
+        {
+            var employeeList = await _employeeService.GetByClientId(clientId);
+
+            foreach (var employee in employeeList)
+            {
+                await _employeeService.Remove(employee.Id!);
+            }
+
+            return employeeList;
+        }
+
+        public async Task<List<Product>> DeleteClientProducts(string clientId)
+        {
+            var productList = await _productService.GetByClientId(clientId);
+
+            foreach(var product in productList)
+            {
+                await _productService.Remove(product.Id!);
+            }
+
+            return productList;
         }
     }
 }

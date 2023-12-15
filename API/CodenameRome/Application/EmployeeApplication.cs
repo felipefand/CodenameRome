@@ -8,7 +8,6 @@ namespace CodenameRome.Application
     public class EmployeeApplication : IEmployeeApplication
     {
         private readonly IEmployeeService _employeeService;
-        private readonly string MANAGERACCESSLEVEL = "20";
         private readonly string NOTFOUND = "Employee not found.";
         private readonly string UNAUTHORIZED = "Not authorized.";
         private readonly string WRONGPASSWORD = "The password you entered is incorrect.";
@@ -26,12 +25,38 @@ namespace CodenameRome.Application
                 employee.ObfuscatePassword();
             }
         }
+
+        public EmployeeRole GetEmployeeRole(string creatorRoleString, EmployeeRole? desiredRole)
+        {
+            var creatorRole = StringToEmployeeRole(creatorRoleString);
+
+            if (creatorRole == EmployeeRole.Owner)
+                return desiredRole ?? EmployeeRole.Employee;
+
+            return EmployeeRole.Employee;
+        }
+
+        public EmployeeRole StringToEmployeeRole(string role)
+        {
+            if (Enum.IsDefined(typeof(EmployeeRole), role))
+                return (EmployeeRole)Enum.Parse(typeof(EmployeeRole), role);
+
+            return EmployeeRole.Employee;
+        }
+
+        public void ValidateEmployeeChangeByStringAndRole(string editorRoleString, EmployeeRole editeeRole)
+        {
+            var editorRole = StringToEmployeeRole(editorRoleString);
+            if (editorRole >= editeeRole)
+                throw new InvalidOperationException(UNAUTHORIZED);
+        }
+
         public async Task ChangePass(string id, string newPassword)
         {
             var employeeDto = new EmployeeDto();
             employeeDto.Password = newPassword;
-
             employeeDto.ValidatePassword();
+
             await _employeeService.ChangePassword(id, employeeDto.Password);
             return;
         }
@@ -39,6 +64,7 @@ namespace CodenameRome.Application
         public async Task<Employee> Update(string id, EmployeeDto employeeDto)
         {
             employeeDto.ValidateEmployee();
+
             await _employeeService.Update(id, employeeDto);
             var employee = await _employeeService.GetById(id);
             employee!.ObfuscatePassword();
@@ -66,13 +92,13 @@ namespace CodenameRome.Application
             return employee;
         }
 
-        public async Task<Employee> CreateEmployee(EmployeeDto employee, string clientId, string employeeRole)
+        public async Task<Employee> CreateEmployee(EmployeeDto employee, string clientId, string creatorRole)
         {
             employee.ValidateEmployeeCreation();
 
-            if (employee.Username != null)
+            if (employee.Email != null)
             {
-                var isUsernameInUse = await _employeeService.GetByUsername(employee.Username!);
+                var isUsernameInUse = await _employeeService.GetByEmail(employee.Email!);
                 if (isUsernameInUse != null)
                     throw new Exception(USERALREADYEXISTS);
             }
@@ -84,9 +110,9 @@ namespace CodenameRome.Application
                 Address = employee.Address,
                 PhoneNumber = employee.PhoneNumber,
                 Salary = employee.Salary,
-                Username = employee.Username,
+                Email = employee.Email,
                 Password = employee.Password,
-                AccessLevel = employeeRole == MANAGERACCESSLEVEL? "30" : employee.AccessLevel
+                Role = GetEmployeeRole(creatorRole, employee.Role)
             };
 
             await _employeeService.Create(newEmployee);
@@ -101,7 +127,7 @@ namespace CodenameRome.Application
             if (employee == null || employee.ClientId != clientId)
                 throw new ArgumentNullException(NOTFOUND);
 
-            if (employee.Username == null)
+            if (employee.Email == null)
                 throw new Exception(MUSTHAVEUSERNAME);
 
             if (employee.Id == employeeId)
@@ -110,25 +136,23 @@ namespace CodenameRome.Application
                 return;
             }
 
-            if (employeeRole.CompareTo(employee.AccessLevel) >= 0)
-                throw new InvalidOperationException(UNAUTHORIZED);
-
+            ValidateEmployeeChangeByStringAndRole(employeeRole, employee.Role);
 
             await ChangePass(id, newPassword);
             return;
         }
 
-        public async Task ChangeOwnPassword(string employeeId, ChangePassRequest changePasswordDto)
+        public async Task ChangeOwnPassword(string employeeId, ChangePassRequest changePasswordRequest)
         {
             var employee = await _employeeService.GetById(employeeId);
 
             if (employee == null)
                 throw new ArgumentNullException(NOTFOUND);
 
-            if (!employee.VerifyPassword(changePasswordDto.OldPassword))
+            if (!employee.VerifyPassword(changePasswordRequest.OldPassword))
                 throw new InvalidOperationException(WRONGPASSWORD);
 
-            await ChangePass(employeeId, changePasswordDto.NewPassword);
+            await ChangePass(employeeId, changePasswordRequest.NewPassword);
             return;
         }
 
@@ -139,12 +163,12 @@ namespace CodenameRome.Application
             if (employee == null || employee.ClientId != clientId)
                 throw new ArgumentNullException(NOTFOUND);
 
-            if (employee.Username == null && employee.Password == null)
+            if (employee.Email == null && employee.Password == null)
             {
-                if (employeeDto.Username != null && employeeDto.Password == null)
+                if (employeeDto.Email != null && employeeDto.Password == null)
                     throw new Exception(MUSTHAVEPASSWORD);
 
-                if (employeeDto.Password != null && employeeDto.Username == null)
+                if (employeeDto.Password != null && employeeDto.Email == null)
                     throw new Exception(MUSTHAVEUSERNAME);
             }
 
@@ -154,8 +178,7 @@ namespace CodenameRome.Application
                 return employee!;
             }
 
-            if (employeeRole.CompareTo(employee.AccessLevel) >= 0)
-                throw new InvalidOperationException(UNAUTHORIZED);
+            ValidateEmployeeChangeByStringAndRole(employeeRole, employee.Role);
 
             employee = await Update(id, employeeDto);
             return employee!;
@@ -168,8 +191,7 @@ namespace CodenameRome.Application
             if (employee == null || employee.ClientId != clientId)
                 throw new ArgumentNullException(NOTFOUND);
 
-            if (employeeRole.CompareTo(employee.AccessLevel) >= 0)
-                throw new InvalidOperationException(UNAUTHORIZED);
+            ValidateEmployeeChangeByStringAndRole(employeeRole, employee.Role);
 
             await _employeeService.Remove(id);
             return employee;
